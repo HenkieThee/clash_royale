@@ -1,0 +1,11 @@
+{
+  "domain": "clash_royale",
+  "name": "Clash Royale",
+  "documentation": "https://github.com/HenkieThee/clash_royale",
+  "requirements": ["aiohttp"],
+  "codeowners": ["@HenkieThee"],
+  "version": "1.0.0",
+  "iot_class": "cloud_polling",
+  "config_flow": true,
+  "integration_type": "service"
+}
