@@ -12,7 +12,7 @@ APITOKEN_SCHEMA = vol.Schema({
 })
 
 PLAYER_SCHEMA = vol.Schema({
-    vol.Required("player_tag", description="Player tag (e.g. #28GOJ92JY or 28GOJ92JY)"): str,
+    vol.Required("player_tag", description="Player tag (e.g. #28g0j92jy or 28g0j92jy)"): str,
 })
 
 class ClashRoyaleConfigFlow(config_entries.ConfigFlow, domain="clash_royale"):
@@ -151,8 +151,8 @@ class ClashRoyaleConfigFlow(config_entries.ConfigFlow, domain="clash_royale"):
         """Normalize player tag to always start with #.
         
         Accepts both formats:
-        - #28GOJ92JY 
-        - 28GOJ92JY
+        - #28g0j92jy 
+        - 28g0j92jy
         """
         player_tag = player_tag.strip() 
         if not player_tag.startswith("#"):
