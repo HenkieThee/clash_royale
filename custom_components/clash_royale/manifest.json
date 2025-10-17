@@ -1,12 +1,12 @@
 {
   "domain": "clash_royale",
   "name": "Clash Royale",
+  "codeowners": ["@HenkieThee"],
+  "config_flow": true,
   "documentation": "https://github.com/HenkieThee/clash_royale",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/HenkieThee/clash_royale/issues",
   "requirements": ["aiohttp"],
-  "codeowners": ["@HenkieThee"],
-  "version": "1.0.0",
-  "iot_class": "cloud_polling",
-  "config_flow": true,
-  "integration_type": "service"
+  "version": "1.0.0"
 }
