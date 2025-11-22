@@ -12,6 +12,7 @@ A Home Assistant integration that fetches Clash Royale player statistics using t
 - 👑 **Clan Information**: View clan membership and role
 - 📊 **Real-time Updates**: Configurable update intervals
 - 🎮 **Multiple Players**: Support for multiple player accounts
+- 🔒 **Proxy Support**: Route traffic through a static IP (perfect for dynamic home IPs)
 - ⚙️ **Easy Configuration**: Simple setup through Home Assistant UI
 
 ## Installation
@@ -36,7 +37,7 @@ A Home Assistant integration that fetches Clash Royale player statistics using t
 2. Create an account or log in
 3. Click on **My Account**
 4. Create a new API key
-5. **Important**: Add your Home Assistant IP address to the allowed IPs list
+5. **Important**: Add your Home Assistant IP address (or your VPS Proxy IP) to the allowed IPs list
 
 ### 2. Configure the Integration
 
@@ -45,7 +46,8 @@ A Home Assistant integration that fetches Clash Royale player statistics using t
 3. Search for "Clash Royale"
 4. Enter your API token when prompted
 5. Enter your player tag (format: `#28g0j92jy` or `28g0j92jy`)
-6. Click **Submit**
+6. **(Optional)** Enter your Proxy URL if you need to route traffic through a static IP (e.g., `http://user:pass@ip:port`)
+7. Click **Submit**
 
 ### 3. Find Your Player Tag
 
@@ -54,8 +56,17 @@ Your player tag can be found in the Clash Royale app:
 - Tap on your profile
 - Your player tag is displayed at the top (e.g., `#28g0j92jy`)
 
-## Configuration Options
+## Proxy Support (Dynamic IP Solution)
 
+The Clash Royale API requires you to whitelist a **Static IP address**. If your home internet has a **Dynamic IP** (which changes periodically), your API token will stop working when your IP changes.
+
+To fix this, you can configure this integration to route traffic through a proxy server (e.g., Squid) hosted on a VPS with a static IP. This integration supports standard HTTP proxies with authentication.
+
+**Example Configuration:**
+If you set up Squid on a VPS with username/password auth, your URL will look like this:
+`http://username:password@87.106.207.220:3128`
+
+## Configuration Options
 The integration supports the following configuration options:
 
 | Option | Description | Default |

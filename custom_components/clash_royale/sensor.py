@@ -13,10 +13,11 @@ _LOGGER = logging.getLogger(__name__)
 class ClashRoyaleDataUpdateCoordinator(DataUpdateCoordinator):
     """Data update coordinator for fetching data."""
     
-    def __init__(self, hass: HomeAssistant, api_token: str, player_tag: str, update_interval: int = 300):
+    def __init__(self, hass: HomeAssistant, api_token: str, player_tag: str, update_interval: int = 300, proxy_url: str = None):
         """Initialize the coordinator."""
         self.api_token = api_token
         self.player_tag = player_tag.replace("#", "%23")  # URL encode the #
+        self.proxy_url = proxy_url
         
         super().__init__(
             hass,
@@ -36,33 +37,46 @@ class ClashRoyaleDataUpdateCoordinator(DataUpdateCoordinator):
             
             url = f"https://api.clashroyale.com/v1/players/{self.player_tag}"
             
-            async with session.get(url, headers=headers) as response:
+            async with session.get(url, headers=headers, proxy=self.proxy_url) as response:
                 if response.status == 200:
                     return await response.json()
                 elif response.status == 403:
-                    _LOGGER.error("Invalid API token (403 Forbidden)")
-                    raise UpdateFailed("Invalid API token")
+                    error_msg = await response.text()
+                    _LOGGER.error(f"Invalid API token (403 Forbidden): {error_msg}")
+                    raise UpdateFailed(f"Invalid API token: {error_msg}")
                 elif response.status == 404:
                     _LOGGER.error("Player not found (404)")
                     raise UpdateFailed(f"Player {self.player_tag} not found")
                 else:
                     _LOGGER.error(f"API error: {response.status}")
                     raise UpdateFailed(f"API returned status {response.status}")
-                    
+        
+        except UpdateFailed:
+            # Re-raise UpdateFailed without wrapping it again or logging it again
+            raise
         except Exception as err:
             _LOGGER.error(f"Error fetching data: {err}")
             raise UpdateFailed(f"Error fetching data: {err}")
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up sensors from a config entry."""
+    # Use data from the entry setup in __init__.py if available, or direct from entry
+    # Best practice is to get coordinator from hass.data if setup there, but currently
+    # the coordinator is created here.
+    
     api_token = entry.data.get("api_token")
     player_tag = entry.data.get("player_tag")
     
     # Get update interval from options (default 300 seconds)
     update_interval = entry.options.get("interval", 300)
     
+    # Get proxy url from options or config
+    proxy_url = entry.options.get("proxy_url", entry.data.get("proxy_url"))
+    if proxy_url == "":
+        proxy_url = None
+    
     # Create coordinator for shared data updates
-    coordinator = ClashRoyaleDataUpdateCoordinator(hass, api_token, player_tag, update_interval)
+    coordinator = ClashRoyaleDataUpdateCoordinator(hass, api_token, player_tag, update_interval, proxy_url)
     await coordinator.async_config_entry_first_refresh()
     
     # Add one sensor per player with all data as attributes
